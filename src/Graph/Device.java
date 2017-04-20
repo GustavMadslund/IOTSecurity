@@ -10,6 +10,8 @@ import java.util.List;
 public class Device {
     private String name;
     private DeviceType deviceType;
+    private List<String> sensors;
+    private List<String> actuators;
     private List<String> dimensions;
     private List<Connection> connections;
 

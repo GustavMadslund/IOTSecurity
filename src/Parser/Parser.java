@@ -16,9 +16,6 @@ public class Parser {
         NodeList devices = doc.getElementsByTagName("device");
         NodeList connections = doc.getElementsByTagName("connection");
 
-        System.out.println("Devices:");
-        for(int i = 0; i < devices.getLength(); i++){
-            System.out.println(devices.item(i).getAttributes().getNamedItem("name").getNodeValue());
-        }
+
     }
 }
