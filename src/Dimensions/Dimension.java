@@ -1,7 +1,12 @@
 package Dimensions;
 
-public interface Dimension {
+import java.util.HashMap;
+import java.util.Map;
 
-    String getName();
+public class Dimension {
+    private Map<String, Double> dimensions;
 
+    public Dimension() {
+        dimensions = new HashMap<>();
+    }
 }

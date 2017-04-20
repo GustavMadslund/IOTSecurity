@@ -10,10 +10,10 @@ import java.util.List;
 public class Device {
     private String name;
     private DeviceType deviceType;
-    private List<Dimension> dimensions;
+    private List<String> dimensions;
     private List<Connection> connections;
 
-    public Device(String name, DeviceType deviceType, List<Dimension> dimensions) {
+    public Device(String name, DeviceType deviceType, List<String> dimensions) {
         this.name = name;
         this.deviceType = deviceType;
         this.dimensions = dimensions;
@@ -28,7 +28,7 @@ public class Device {
         return deviceType;
     }
 
-    public List<Dimension> getDimensions() {
+    public List<String> getDimensions() {
         return dimensions;
     }
 
