@@ -1,4 +1,8 @@
+package Graph;
+
+import Dimensions.Dimension;
 import Enums.DeviceType;
+import Graph.Connection;
 
 import java.util.ArrayList;
 import java.util.List;

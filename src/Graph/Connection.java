@@ -1,3 +1,5 @@
+package Graph;
+
 import Enums.ConnectionType;
 import Enums.Formats;
 

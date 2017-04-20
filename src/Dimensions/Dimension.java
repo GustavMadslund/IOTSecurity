@@ -1,3 +1,4 @@
+package Dimensions;
 
 public interface Dimension {
 
