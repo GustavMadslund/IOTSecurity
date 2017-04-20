@@ -15,9 +15,11 @@ public class Device {
     private List<String> dimensions;
     private List<Connection> connections;
 
-    public Device(String name, DeviceType deviceType, List<String> dimensions) {
+    public Device(String name, DeviceType deviceType, List<String> sensors, List<String> actuators, List<String> dimensions) {
         this.name = name;
         this.deviceType = deviceType;
+        this.sensors = sensors;
+        this.actuators = actuators;
         this.dimensions = dimensions;
         connections = new ArrayList<>();
     }
@@ -30,6 +32,14 @@ public class Device {
         return deviceType;
     }
 
+    public List<String> getSensors() {
+        return sensors;
+    }
+
+    public List<String> getActuators() {
+        return actuators;
+    }
+
     public List<String> getDimensions() {
         return dimensions;
     }
@@ -38,7 +48,12 @@ public class Device {
         return connections;
     }
 
-    public void addConnection(Connection connection){
+    public void addConnection(Connection connection) {
         connections.add(connection);
+    }
+
+    @Override
+    public String toString() {
+        return "Name: " + name + "\n Type: " + deviceType + "\n Sensors: " + sensors + "\n Actuators: " + actuators + "\n Dimensions: " + dimensions;
     }
 }

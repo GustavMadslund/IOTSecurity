@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <system>
-    <device name="Hub0" type="Hub">
+    <device name="Hub0" type="hub">
         <sensor>Voice control</sensor>
         <dimension>Mission critical</dimension>
         <dimension>Patchable</dimension>
     </device>
-    <device name="Bulb0" type="Bulb">
+    <device name="Bulb0" type="bulb">
         <dimension>Unpatchable</dimension>
         <dimension>Standard based</dimension>
         <dimension>Managed</dimension>
