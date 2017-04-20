@@ -1,3 +1,5 @@
+import Enums.ConnectionType;
+import Enums.Formats;
 
 public class Connection {
     private Device firstDevice;

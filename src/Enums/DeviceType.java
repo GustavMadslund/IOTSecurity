@@ -1,3 +1,4 @@
+package Enums;
 
 public enum DeviceType {
     THERMOSTAT, TV, BULB, LOCK, WINDOW, ALARM, COFFEE_MACHINE, SMOKE_ALARM, PLUG, CCTV, FRIDGE, HUB, PHONE

@@ -1,3 +1,5 @@
+import Enums.DeviceType;
+
 import java.util.List;
 
 public class Device {
