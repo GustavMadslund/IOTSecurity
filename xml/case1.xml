@@ -10,9 +10,8 @@
         <dimension>Standard based</dimension>
         <dimension>Managed</dimension>
     </device>
-    <connection format="D2D">
+    <connection format="D2D" type="ZigBee">
         <devicename>Hub0</devicename>
         <devicename>Bulb0</devicename>
-        <connectiontype>ZigBee</connectiontype>
     </connection>
 </system>
