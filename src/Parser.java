@@ -1,4 +1,5 @@
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -10,6 +11,12 @@ public class Parser {
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(new File("xml/case1.xml"));
 
-        System.out.println(doc.getElementsByTagName("device").item(0).getAttributes().getNamedItem("name"));
+        NodeList devices = doc.getElementsByTagName("device");
+        NodeList connections = doc.getElementsByTagName("connection");
+
+        System.out.println("Devices:");
+        for(int i = 0; i < devices.getLength(); i++){
+            System.out.println(devices.item(i).getAttributes().getNamedItem("name").getNodeValue());
+        }
     }
 }
