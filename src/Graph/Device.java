@@ -1,6 +1,6 @@
 package Graph;
 
-import Enums.DeviceType;
+import Enum.DeviceType;
 
 import java.util.ArrayList;
 import java.util.List;
