@@ -1,8 +1,6 @@
 package Graph;
 
-import Dimensions.Dimension;
 import Enums.DeviceType;
-import Graph.Connection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +52,6 @@ public class Device {
 
     @Override
     public String toString() {
-        return "Name: " + name + "\n Type: " + deviceType + "\n Sensors: " + sensors + "\n Actuators: " + actuators + "\n Dimensions: " + dimensions;
+        return "Name: " + name + "\n Type: " + deviceType + "\n Sensors: " + sensors + "\n Actuators: " + actuators + "\n Analysis: " + dimensions;
     }
 }
