@@ -31,8 +31,4 @@ public class Connection {
     public ConnectionType getConnectionType() {
         return connectionType;
     }
-
-
-
-
 }

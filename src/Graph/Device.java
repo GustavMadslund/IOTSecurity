@@ -52,6 +52,10 @@ public class Device {
 
     @Override
     public String toString() {
-        return "Name: " + name + "\n Type: " + deviceType + "\n Sensors: " + sensors + "\n Actuators: " + actuators + "\n Analysis: " + dimensions;
+        return "Name: " + name
+                + "\n Type: " + deviceType
+                + "\n Sensors: " + sensors
+                + "\n Actuators: " + actuators
+                + "\n Analysis: " + dimensions;
     }
 }

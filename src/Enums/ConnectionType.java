@@ -1,5 +1,5 @@
 package Enums;
 
 public enum ConnectionType {
-    ZIGBEE, WIFI, BLUETOOTH
+    ZIGBEE, WIFI, BLUETOOTH, OTHER
 }
