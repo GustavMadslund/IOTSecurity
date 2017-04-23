@@ -9,34 +9,74 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class Parser {
-    public static void main(String[] args) throws Exception {
-        //Load XML
+    private DocumentBuilder db;
+
+    public Parser() {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
+        try {
+            db = dbf.newDocumentBuilder();
+        }
+        catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Map<String, Device> parse(String file) throws IOException, SAXException, ParserException {
+        //Load XML
         Document doc = db.parse(new File("xml/case1.xml"));
 
         //Find all device and connection tags
         NodeList devices = doc.getElementsByTagName("device");
         NodeList connections = doc.getElementsByTagName("connection");
 
-        //Parse all devices
+        //Parse devices
+        Map<String, Device> deviceMap = parseDevices(devices);
+
+        //Parse and encode the connections
+        parseConnections(connections, deviceMap);
+
+        //Done
+        return deviceMap;
+    }
+
+    private Map<String, Device> parseDevices(NodeList devices) throws ParserException {
         Map<String, Device> deviceMap = new HashMap<>();
+
         for (int i = 0; i < devices.getLength(); i++){
             Node deviceNode = devices.item(i);
             NamedNodeMap deviceAttributes = deviceNode.getAttributes();
 
-            String deviceName = deviceAttributes.getNamedItem("name").getNodeValue();
-            DeviceType deviceType = DeviceType.valueOf(deviceAttributes.getNamedItem("type").getNodeValue().toUpperCase());
+            String deviceName;
+            try {
+                deviceName = deviceAttributes.getNamedItem("name").getNodeValue();
+            }
+            catch (NullPointerException e) {
+                throw new ParserException("Missing name tag for device.");
+            }
+
+            DeviceType deviceType;
+            try {
+                deviceType = DeviceType.valueOf(deviceAttributes.getNamedItem("type").getNodeValue().toUpperCase());
+            }
+            catch (NullPointerException e) {
+                throw new ParserException("Missing type tag for device '" + deviceName + "'.");
+            }
+            catch (IllegalArgumentException e) {
+                throw new ParserException("Unknown device type '" + deviceAttributes.getNamedItem("type").getNodeValue() + "'.");
+            }
 
             List<String> sensorList = new ArrayList<>();
             List<String> actuatorList = new ArrayList<>();
@@ -60,13 +100,35 @@ public class Parser {
             deviceMap.put(deviceName, device);
         }
 
-        //Parse all connections
+        return deviceMap;
+    }
+
+    private void parseConnections(NodeList connections, Map<String, Device> deviceMap) throws ParserException {
         for (int i = 0; i < connections.getLength(); i++){
             Node connectionNode = connections.item(i);
             NamedNodeMap connectionAttributes = connectionNode.getAttributes();
 
-            ConnectionFormat connectionFormat = ConnectionFormat.valueOf(connectionAttributes.getNamedItem("format").getNodeValue().toUpperCase());
-            ConnectionType connectionType = ConnectionType.valueOf(connectionAttributes.getNamedItem("type").getNodeValue().toUpperCase());
+            ConnectionFormat connectionFormat;
+            try {
+                connectionFormat = ConnectionFormat.valueOf(connectionAttributes.getNamedItem("format").getNodeValue().toUpperCase());
+            }
+            catch (NullPointerException e) {
+                throw new ParserException("Missing format tag for connection.");
+            }
+            catch (IllegalArgumentException e) {
+                throw new ParserException("Unknown connection format '" + connectionAttributes.getNamedItem("format").getNodeValue() + "'.");
+            }
+
+            ConnectionType connectionType;
+            try {
+                connectionType = ConnectionType.valueOf(connectionAttributes.getNamedItem("type").getNodeValue().toUpperCase());
+            }
+            catch (NullPointerException e) {
+                throw new ParserException("Missing type tag for connection.");
+            }
+            catch (IllegalArgumentException e) {
+                throw new ParserException("Unknown connection type '" + connectionAttributes.getNamedItem("type").getNodeValue() + "'.");
+            }
 
             NodeList connectionChildren = connectionNode.getChildNodes();
             List<String> devicenameList = new ArrayList<>();
@@ -75,15 +137,27 @@ public class Parser {
                     devicenameList.add(connectionChildren.item(j).getTextContent());
                 }
             }
+
+            if (devicenameList.size() != 2) {
+                throw new ParserException("Connections should have two and only two 'devicename' tags.");
+            }
+
             Device firstDevice = deviceMap.get(devicenameList.get(0));
             Device secondDevice = deviceMap.get(devicenameList.get(1));
+
+            if (firstDevice == null || secondDevice == null) {
+                throw new ParserException("'devicename' tags can only reference defined devices.");
+            }
 
             Connection connection = new Connection(firstDevice, secondDevice, connectionFormat, connectionType);
             connection.updateDeviceConnections();
         }
+    }
 
-        //Print
-        for(Map.Entry<String, Device> entry : deviceMap.entrySet()){
+    public static void main(String[] args) throws Exception {
+        Parser parser = new Parser();
+
+        for(Map.Entry<String, Device> entry : parser.parse("xml/case1.xml").entrySet()){
             System.out.println(entry.getValue());
             System.out.println("CONNECTIONS:");
             entry.getValue().getConnections().forEach(System.out::println);
