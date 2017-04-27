@@ -5,13 +5,15 @@ import Enum.DeviceType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Device {
+public class Device implements Node{
     private String name;
     private DeviceType deviceType;
     private List<String> sensors;
     private List<String> actuators;
     private List<String> dimensions;
     private List<Connection> connections;
+
+    private boolean visited;
 
     public Device(String name, DeviceType deviceType, List<String> sensors, List<String> actuators, List<String> dimensions) {
         this.name = name;
@@ -20,6 +22,8 @@ public class Device {
         this.actuators = actuators;
         this.dimensions = dimensions;
         connections = new ArrayList<>();
+
+        visited = false;
     }
 
     public String getName() {
@@ -48,6 +52,16 @@ public class Device {
 
     public void addConnection(Connection connection) {
         connections.add(connection);
+    }
+
+    @Override
+    public void visit() {
+        visited = true;
+    }
+
+    @Override
+    public boolean isVisited() {
+        return visited;
     }
 
     @Override
