@@ -36,7 +36,7 @@ public class Parser {
 
     public Map<String, Device> parse(String file) throws IOException, SAXException, ParserException {
         //Load XML
-        Document doc = db.parse(new File("xml/case1.xml"));
+        Document doc = db.parse(new File(file));
 
         //Find all device and connection tags
         NodeList devices = doc.getElementsByTagName("device");
