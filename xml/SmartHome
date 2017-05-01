@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<system>
+    <device name="phone" type="hub">
+        <sensor></sensor>
+        <dimension>Mission critical</dimension>
+        <dimension>Patchable</dimension>
+    </device>
+
+    <device name="speakerHub" type="hub">
+        <sensor></sensor>
+        <dimension>Mission critical</dimension>
+        <dimension>Patchable</dimension>
+    </device>
+
+    <device name="coffee machine" type="">
+        <sensor></sensor>
+        <dimension>Patchable</dimension>
+    </device>
+
+    <device name="window" type="">
+        <sensor></sensor>
+        <dimension>Patchable</dimension>
+    </device>
+
+    <device name="fridge" type="">
+        <sensor></sensor>
+        <dimension>Patchable</dimension>
+    </device>
+
+    <device name="Alarm" type="hub">
+        <sensor></sensor>
+        <dimension>Mission critical</dimension>
+        <dimension>Patchable</dimension>
+    </device>
+
+    <device name="smoke alarm" type="hub">
+        <sensor></sensor>
+        <dimension>Mission critical</dimension>
+        <dimension>Patchable</dimension>
+    </device>
+
+    <device name="lock" type="hub">
+        <sensor></sensor>
+        <dimension>Mission critical</dimension>
+        <dimension>Patchable</dimension>
+    </device>
+
+    <device name="tv" type="hub">
+        <sensor></sensor>
+        <dimension>Mission critical</dimension>
+        <dimension>Patchable</dimension>
+    </device>
+
+    <device name="plug" type="hub">
+        <sensor></sensor>
+        <dimension>Mission critical</dimension>
+        <dimension>Patchable</dimension>
+    </device>
+
+    <device name="Thermostat" type="hub">
+        <sensor></sensor>
+        <dimension>Mission critical</dimension>
+        <dimension>Patchable</dimension>
+    </device>
+
+    <device name="cctv" type="hub">
+        <sensor></sensor>
+        <dimension>Mission critical</dimension>
+        <dimension>Patchable</dimension>
+    </device>
+
+    <device name="bulb" type="hub">
+        <sensor></sensor>
+        <dimension>Mission critical</dimension>
+        <dimension>Patchable</dimension>
+    </device>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>phone</devicename>
+        <devicename>coffee machine</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>phone</devicename>
+        <devicename>fridge</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>phone</devicename>
+        <devicename>windows</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>phone</devicename>
+        <devicename>alarm</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>phone</devicename>
+        <devicename>smoke alarm</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>phone</devicename>
+        <devicename>tv</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>phone</devicename>
+        <devicename>lock</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>phone</devicename>
+        <devicename>thermostat</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>phone</devicename>
+        <devicename>camera</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>speakerHub</devicename>
+        <devicename>bulb</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>speakerHub</devicename>
+        <devicename>lock</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>speakerHub</devicename>
+        <devicename>thermostat</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>speakerHub</devicename>
+        <devicename>plug</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>speakerHub</devicename>
+        <devicename>alarm</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>speakerHub</devicename>
+        <devicename>smoke alarm</devicename>
+    </connection>
+
+    <connection format="D2G" type="Wi-Fi">
+        <devicename>speakerHub</devicename>
+        <devicename>phone</devicename>
+    </connection>
+
+</system>
