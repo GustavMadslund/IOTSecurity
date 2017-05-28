@@ -4,29 +4,31 @@ import Enum.ConnectionFormat;
 import Enum.ConnectionType;
 
 public class Connection {
-    private Device firstDevice;
-    private Device secondDevice;
+    private Device from;
+    private Device to;
     private ConnectionFormat format;
     private ConnectionType connectionType;
+    private boolean access;
 
-    public Connection(Device firstDevice, Device secondDevice, ConnectionFormat format, ConnectionType connectionType) {
-        this.firstDevice = firstDevice;
-        this.secondDevice = secondDevice;
+    public Connection(Device from, Device to, ConnectionFormat format, ConnectionType connectionType, boolean access) {
+        this.from = from;
+        this.to = to;
         this.format = format;
         this.connectionType = connectionType;
+        this.access = access;
     }
 
     public void updateDeviceConnections(){
-        firstDevice.addConnection(this);
-        secondDevice.addConnection(this);
+        from.addConnection(this);
+        to.addConnection(this);
     }
 
-    public Device getFirstDevice() {
-        return firstDevice;
+    public Device getFrom() {
+        return from;
     }
 
-    public Device getSecondDevice() {
-        return secondDevice;
+    public Device getTo() {
+        return to;
     }
 
     public ConnectionFormat getFormat() {
@@ -37,11 +39,16 @@ public class Connection {
         return connectionType;
     }
 
+    public boolean getAccess() {
+        return access;
+    }
+
     @Override
     public String toString() {
-        return "Device_1: " + firstDevice.getName()
-                + "\nDevice_2: " + secondDevice.getName()
+        return "From: " + from.getName()
+                + "\nTo: " + to.getName()
                 + "\n ConnectionFormat: " + format
-                + "\n Connection type: " + connectionType;
+                + "\n Connection type: " + connectionType
+                + "\n Access: " + access;
     }
 }

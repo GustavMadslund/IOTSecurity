@@ -10,8 +10,17 @@
         <dimension>Standard based</dimension>
         <dimension>Managed</dimension>
     </device>
-    <connection format="D2D" type="ZigBee">
-        <devicename>Hub0</devicename>
-        <devicename>Bulb0</devicename>
+    <device name="Phone0" type="phone">
+        <dimension>Mission critical</dimension>
+        <dimension>Patchable</dimension>
+        <dimension>Managed</dimension>
+    </device>
+    <connection format="D2D" type="ZigBee" access="false">
+        <from>Hub0</from>
+        <to>Bulb0</to>
+    </connection>
+    <connection format="D2G" type="WiFi" access="true">
+        <from>Phone0</from>
+        <to>Hub0</to>
     </connection>
 </system>

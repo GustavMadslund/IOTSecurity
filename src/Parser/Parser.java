@@ -64,7 +64,7 @@ public class Parser {
                 deviceName = deviceAttributes.getNamedItem("name").getNodeValue();
             }
             catch (NullPointerException e) {
-                throw new ParserException("Missing name tag for device.");
+                throw new ParserException("Missing 'name' attribute for device.");
             }
 
             DeviceType deviceType;
@@ -72,7 +72,7 @@ public class Parser {
                 deviceType = DeviceType.valueOf(deviceAttributes.getNamedItem("type").getNodeValue().toUpperCase());
             }
             catch (NullPointerException e) {
-                throw new ParserException("Missing type tag for device '" + deviceName + "'.");
+                throw new ParserException("Missing 'type' attribute for device '" + deviceName + "'.");
             }
             catch (IllegalArgumentException e) {
                 throw new ParserException("Unknown device type '" + deviceAttributes.getNamedItem("type").getNodeValue() + "'.");
@@ -113,7 +113,7 @@ public class Parser {
                 connectionFormat = ConnectionFormat.valueOf(connectionAttributes.getNamedItem("format").getNodeValue().toUpperCase());
             }
             catch (NullPointerException e) {
-                throw new ParserException("Missing format tag for connection.");
+                throw new ParserException("Missing 'format' attribute for connection.");
             }
             catch (IllegalArgumentException e) {
                 throw new ParserException("Unknown connection format '" + connectionAttributes.getNamedItem("format").getNodeValue() + "'.");
@@ -124,32 +124,43 @@ public class Parser {
                 connectionType = ConnectionType.valueOf(connectionAttributes.getNamedItem("type").getNodeValue().toUpperCase());
             }
             catch (NullPointerException e) {
-                throw new ParserException("Missing type tag for connection.");
+                throw new ParserException("Missing 'type' attribute for connection.");
             }
             catch (IllegalArgumentException e) {
                 throw new ParserException("Unknown connection type '" + connectionAttributes.getNamedItem("type").getNodeValue() + "'.");
             }
 
+            boolean access;
+            try {
+                access = Boolean.parseBoolean(connectionAttributes.getNamedItem("access").getNodeValue());
+            }
+            catch (NullPointerException e) {
+                throw new ParserException("Missing 'access' attribute for connection.");
+            }
+
+            Device fromDevice = null;
+            Device toDevice = null;
             NodeList connectionChildren = connectionNode.getChildNodes();
-            List<String> devicenameList = new ArrayList<>();
             for (int j = 0; j < connectionChildren.getLength(); j++){
-                if (connectionChildren.item(j).getNodeName().equalsIgnoreCase("DEVICENAME")) {
-                    devicenameList.add(connectionChildren.item(j).getTextContent());
+                switch (connectionChildren.item(j).getNodeName().toUpperCase()) {
+                    case "FROM":
+                        fromDevice = deviceMap.get(connectionChildren.item(j).getTextContent());
+                        break;
+                    case "TO":
+                        toDevice = deviceMap.get(connectionChildren.item(j).getTextContent());
+                        break;
                 }
             }
 
-            if (devicenameList.size() != 2) {
-                throw new ParserException("Connections should have two and only two 'devicename' tags.");
+            if (fromDevice == null) {
+                throw new ParserException("Missing 'from' tag for connection.");
             }
 
-            Device firstDevice = deviceMap.get(devicenameList.get(0));
-            Device secondDevice = deviceMap.get(devicenameList.get(1));
-
-            if (firstDevice == null || secondDevice == null) {
-                throw new ParserException("'devicename' tags can only reference defined devices.");
+            if (toDevice == null) {
+                throw new ParserException("Missing 'to' tag for connection.");
             }
 
-            Connection connection = new Connection(firstDevice, secondDevice, connectionFormat, connectionType);
+            Connection connection = new Connection(fromDevice, toDevice, connectionFormat, connectionType, access);
             connection.updateDeviceConnections();
         }
     }

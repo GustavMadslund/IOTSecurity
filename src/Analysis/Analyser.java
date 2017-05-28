@@ -29,7 +29,7 @@ public class Analyser {
                 .map(s -> dimensions.get(s.toUpperCase()).getBaseRating())
                 .reduce(0.0, Double::sum);
         risk += device.getConnections().stream()
-                .map(c -> c.getFirstDevice() != device ? c.getFirstDevice() : c.getSecondDevice())
+                .map(c -> c.getFrom() != device ? c.getFrom() : c.getTo())
                 .map(this::computeNodeRisk)
                 .reduce(0.0, Double::sum);
 
