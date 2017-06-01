@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<system>
+    <device name="0" type="OTHER">
+        <dimension>0</dimension>
+    </device>
+    <device name="1" type="OTHER">
+        <dimension>1</dimension>
+    </device>
+    <device name="2" type="OTHER">
+        <dimension>2</dimension>
+    </device>
+    <device name="3" type="OTHER">
+        <dimension>3</dimension>
+    </device>
+    <device name="4" type="OTHER">
+        <dimension>4</dimension>
+    </device>
+    <device name="5" type="OTHER">
+        <dimension>5</dimension>
+    </device>
+    <device name="6" type="OTHER">
+        <dimension>6</dimension>
+    </device>
+    <connection format="OTHER" type="OTHER" access="true">
+        <from>6</from>
+        <to>0</to>
+    </connection>
+    <connection format="OTHER" type="OTHER" access="true">
+        <from>0</from>
+        <to>1</to>
+    </connection>
+    <connection format="OTHER" type="OTHER" access="true">
+        <from>1</from>
+        <to>0</to>
+    </connection>
+    <connection format="OTHER" type="OTHER" access="true">
+        <from>0</from>
+        <to>2</to>
+    </connection>
+    <connection format="OTHER" type="OTHER" access="true">
+        <from>0</from>
+        <to>3</to>
+    </connection>
+    <connection format="OTHER" type="OTHER" access="true">
+        <from>3</from>
+        <to>4</to>
+    </connection>
+    <connection format="OTHER" type="OTHER" access="true">
+        <from>4</from>
+        <to>0</to>
+    </connection>
+    <connection format="OTHER" type="OTHER" access="true">
+        <from>2</from>
+        <to>5</to>
+    </connection>
+</system>

@@ -1,5 +1,6 @@
 package Parser;
 
+import Analysis.Dimension;
 import Enum.ConnectionFormat;
 import Enum.ConnectionType;
 import Enum.DeviceType;
@@ -34,7 +35,7 @@ public class Parser {
         }
     }
 
-    public Map<String, Device> parse(String file) throws IOException, SAXException, ParserException {
+    public Map<String, Device> parse(String file, Map<String, Dimension> dimensions) throws IOException, SAXException, ParserException {
         //Load XML
         Document doc = db.parse(new File(file));
 
@@ -43,7 +44,7 @@ public class Parser {
         NodeList connections = doc.getElementsByTagName("connection");
 
         //Parse devices
-        Map<String, Device> deviceMap = parseDevices(devices);
+        Map<String, Device> deviceMap = parseDevices(devices, dimensions);
 
         //Parse and encode the connections
         parseConnections(connections, deviceMap);
@@ -52,7 +53,7 @@ public class Parser {
         return deviceMap;
     }
 
-    private Map<String, Device> parseDevices(NodeList devices) throws ParserException {
+    private Map<String, Device> parseDevices(NodeList devices, Map<String, Dimension> dimensions) throws ParserException {
         Map<String, Device> deviceMap = new HashMap<>();
 
         for (int i = 0; i < devices.getLength(); i++){
@@ -97,6 +98,7 @@ public class Parser {
             }
 
             Device device = new Device(deviceName, deviceType, sensorList, actuatorList, dimensionList);
+            device.computeRatings(dimensions);
             deviceMap.put(deviceName, device);
         }
 
