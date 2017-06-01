@@ -26,7 +26,7 @@ public class Analyser {
         device.visit();
 
         double risk = device.getDimensions().stream()
-                .map(s -> dimensions.get(s.toUpperCase()).getBaseRating())
+                .map(s -> dimensions.get(s.toUpperCase()).getBaseImpact())
                 .reduce(0.0, Double::sum);
         risk += device.getConnections().stream()
                 .map(c -> c.getFrom() != device ? c.getFrom() : c.getTo())
@@ -48,11 +48,11 @@ public class Analyser {
         }
 
         Map<String, Dimension> dimensions = new HashMap<>();
-        dimensions.put("MISSION CRITICAL", new Dimension("MISSION CRITICAL", 1.0));
-        dimensions.put("PATCHABLE", new Dimension("PATCHABLE", 1.0));
-        dimensions.put("UNPATCHABLE", new Dimension("UNPATCHABLE", 1.0));
-        dimensions.put("STANDARD BASED", new Dimension("STANDARD BASED", 1.0));
-        dimensions.put("MANAGED", new Dimension("STANDARD BASED", 1.0));
+        dimensions.put("MISSION CRITICAL", new Dimension("MISSION CRITICAL", 1.0, 1.0));
+        dimensions.put("PATCHABLE", new Dimension("PATCHABLE", 1.0, 1.0));
+        dimensions.put("UNPATCHABLE", new Dimension("UNPATCHABLE", 1.0, 1.0));
+        dimensions.put("STANDARD BASED", new Dimension("STANDARD BASED", 1.0, 1.0));
+        dimensions.put("MANAGED", new Dimension("STANDARD BASED", 1.0, 1.0));
 
         Analyser analyser = new Analyser(devices, dimensions);
         System.out.println("RISK: " + analyser.computeRisk());
