@@ -14,17 +14,25 @@ import java.util.stream.Collectors;
 
 public class Analyser {
     private Map<String, Device> devices;
-    private Map<String, Dimension> dimensions;
 
-    public Analyser(Map<String, Device> devices, Map<String, Dimension> dimensions) {
+    public Analyser(Map<String, Device> devices) {
         this.devices = devices;
-        this.dimensions = dimensions;
     }
 
     private List<Device> getExpandedNodes(Device device, Set<Device> frontierSet, Set<Device> exploredNodes) {
         return device.getConnections().stream()
                 .map(c -> c.getFrom() != device ? c.getFrom() : c.getTo())
                 .filter(d -> !exploredNodes.contains(d))
+                .filter(d -> !frontierSet.contains(d))
+                .collect(Collectors.toList());
+    }
+
+    private List<Device> getExpandedImpactUpdateNodes(Device device, Set<Device> frontierSet, Set<Device> exploredNodes, Set<Device> exploredExploredNodes) {
+        return device.getConnections().stream()
+                .filter(c -> c.getTo() == device)
+                .map(Connection::getFrom)
+                .filter(exploredNodes::contains)
+                .filter(d -> !exploredExploredNodes.contains(d))
                 .filter(d -> !frontierSet.contains(d))
                 .collect(Collectors.toList());
     }
@@ -40,7 +48,42 @@ public class Analyser {
                 .collect(Collectors.toList());
     }
 
-    private void updateRisk(Device device, Set<Device> exploredNodes) {
+    private void updateImpact(Device device, Set<Device> exploredNodes) {
+        LinkedList<Device> frontier = new LinkedList<>();
+        Set<Device> frontierSet = new HashSet<>();
+        Set<Device> exploredExploredNodes = new HashSet<>();
+
+        frontier.addAll(getExpandedImpactUpdateNodes(device, frontierSet, exploredNodes, exploredExploredNodes));
+        frontierSet.addAll(frontier);
+        while (!frontier.isEmpty()) {
+            Device currentDevice = frontier.pop();
+            frontierSet.remove(currentDevice);
+
+            double highestImpact = -1.0;
+            Device otherDevice = null;
+            for (Connection c : currentDevice.getConnections()) {
+                if (c.getFrom() == currentDevice) {
+                    if (c.getTo().getNewImpact() > highestImpact) {
+                        otherDevice = c.getTo();
+                        highestImpact = otherDevice.getNewImpact();
+                    }
+                }
+            }
+            if (highestImpact > (2 * currentDevice.getNewImpact() - currentDevice.getBaseImpact())) {
+                currentDevice.setNewImpact((currentDevice.getBaseImpact() + otherDevice.getNewImpact()) / 2);
+
+                exploredExploredNodes.add(currentDevice);
+                List<Device> expandedNodes = getExpandedImpactUpdateNodes(currentDevice, frontierSet, exploredNodes, exploredExploredNodes);
+                frontier.addAll(expandedNodes);
+                frontierSet.addAll(expandedNodes);
+            }
+            else {
+                exploredExploredNodes.add(currentDevice);
+            }
+        }
+    }
+
+    private void updateProbability(Device device, Set<Device> exploredNodes) {
         LinkedList<Device> frontier = new LinkedList<>();
         Set<Device> frontierSet = new HashSet<>();
         Set<Device> exploredExploredNodes = new HashSet<>();
@@ -88,18 +131,31 @@ public class Analyser {
             frontierSet.remove(currentDevice);
 
             double highestProbability = -1.0;
-            Device otherDevice = null;
+            double highestImpact = -1.0;
+            Device otherProbabilityDevice = null;
+            Device otherImpactDevice = null;
             for (Connection c : currentDevice.getConnections()) {
                 if (c.getTo() == currentDevice && c.getAccess()) {
                     if (c.getFrom().getNewProbability() > highestProbability) {
-                        otherDevice = c.getFrom();
-                        highestProbability = otherDevice.getNewProbability();
+                        otherProbabilityDevice = c.getFrom();
+                        highestProbability = otherProbabilityDevice.getNewProbability();
+                    }
+                }
+                else if (c.getFrom() == currentDevice) {
+                    if (c.getTo().getNewImpact() > highestImpact) {
+                        otherImpactDevice = c.getTo();
+                        highestImpact = otherImpactDevice.getNewImpact();
                     }
                 }
             }
+
             if (highestProbability > (2 * currentDevice.getNewProbability() - currentDevice.getBaseProbability())) {
-                currentDevice.setNewProbability((currentDevice.getBaseProbability() + otherDevice.getNewProbability()) / 2);
-                updateRisk(currentDevice, exploredNodes);
+                currentDevice.setNewProbability((currentDevice.getBaseProbability() + otherProbabilityDevice.getNewProbability()) / 2);
+                updateProbability(currentDevice, exploredNodes);
+            }
+            if (highestImpact > (2 * currentDevice.getNewImpact() - currentDevice.getBaseImpact())) {
+                currentDevice.setNewImpact((currentDevice.getBaseImpact() + otherImpactDevice.getNewImpact()) / 2);
+                updateImpact(currentDevice, exploredNodes);
             }
 
             exploredNodes.add(currentDevice);
@@ -117,8 +173,18 @@ public class Analyser {
         dimensions.put("STANDARD BASED", new Dimension("STANDARD BASED", 1.0, 1.0));
         dimensions.put("MANAGED", new Dimension("STANDARD BASED", 1.0, 1.0));
 
+        //===
+        dimensions.put("0", new Dimension("0", 0.0, 0.0));
+        dimensions.put("1", new Dimension("1", 1.2, 1.2));
+        dimensions.put("2", new Dimension("2", 0.1, 0.1));
+        dimensions.put("3", new Dimension("3", 2.5, 2.5));
+        dimensions.put("4", new Dimension("4", 0.2, 0.2));
+        dimensions.put("5", new Dimension("5", 3.0, 3.0));
+        dimensions.put("6", new Dimension("6", 0.1, 0.1));
+        //===
+
         Parser parser = new Parser();
-        Map<String, Device> devices = parser.parse("xml/case1.xml", dimensions);
+        Map<String, Device> devices = parser.parse("xml/case2.xml", dimensions);
 
         for(Map.Entry<String, Device> entry : devices.entrySet()){
             System.out.println(entry.getValue());
@@ -127,7 +193,12 @@ public class Analyser {
             System.out.println("----------");
         }
 
-        Analyser analyser = new Analyser(devices, dimensions);
+        Analyser analyser = new Analyser(devices);
         analyser.computeRisk();
+
+        System.out.println("Probability:");
+        devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getNewProbability()));
+        System.out.println("Impact:");
+        devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getNewImpact()));
     }
 }
