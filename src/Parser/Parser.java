@@ -36,20 +36,20 @@ public class Parser {
     }
 
     public Map<String, Device> parse(String file, Map<String, Dimension> dimensions) throws IOException, SAXException, ParserException {
-        //Load XML
+        // Load XML
         Document doc = db.parse(new File(file));
 
-        //Find all device and connection tags
+        // Find all device and connection tags
         NodeList devices = doc.getElementsByTagName("device");
         NodeList connections = doc.getElementsByTagName("connection");
 
-        //Parse devices
+        // Parse devices
         Map<String, Device> deviceMap = parseDevices(devices, dimensions);
 
-        //Parse and encode the connections
+        // Parse and encode the connections
         parseConnections(connections, deviceMap);
 
-        //Done
+        // Done
         return deviceMap;
     }
 

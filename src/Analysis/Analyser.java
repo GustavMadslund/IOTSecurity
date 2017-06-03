@@ -19,6 +19,7 @@ public class Analyser {
         this.devices = devices;
     }
 
+    // Find new devices connected to the current device
     private List<Device> getExpandedNodes(Device device, Set<Device> frontierSet, Set<Device> exploredNodes) {
         return device.getConnections().stream()
                 .map(c -> c.getFrom() != device ? c.getFrom() : c.getTo())
@@ -27,23 +28,25 @@ public class Analyser {
                 .collect(Collectors.toList());
     }
 
-    private List<Device> getExpandedImpactUpdateNodes(Device device, Set<Device> frontierSet, Set<Device> exploredNodes, Set<Device> exploredExploredNodes) {
+    // Find new devices with a connection towards the current device
+    private List<Device> getExpandedImpactUpdateNodes(Device device, Set<Device> frontierSet, Set<Device> relevantNodes, Set<Device> exploredNodes) {
         return device.getConnections().stream()
                 .filter(c -> c.getTo() == device)
                 .map(Connection::getFrom)
-                .filter(exploredNodes::contains)
-                .filter(d -> !exploredExploredNodes.contains(d))
+                .filter(relevantNodes::contains)
+                .filter(d -> !exploredNodes.contains(d))
                 .filter(d -> !frontierSet.contains(d))
                 .collect(Collectors.toList());
     }
 
-    private List<Device> getExpandedProbabilityUpdateNodes(Device device, Set<Device> frontierSet, Set<Device> exploredNodes, Set<Device> exploredExploredNodes) {
+    // Find new devices with an access connection from the current device
+    private List<Device> getExpandedProbabilityUpdateNodes(Device device, Set<Device> frontierSet, Set<Device> relevantNodes, Set<Device> exploredNodes) {
         return device.getConnections().stream()
                 .filter(c -> c.getFrom() == device)
                 .filter(Connection::getAccess)
                 .map(Connection::getTo)
-                .filter(exploredNodes::contains)
-                .filter(d -> !exploredExploredNodes.contains(d))
+                .filter(relevantNodes::contains)
+                .filter(d -> !exploredNodes.contains(d))
                 .filter(d -> !frontierSet.contains(d))
                 .collect(Collectors.toList());
     }

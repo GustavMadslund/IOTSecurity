@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Device{
+    // The rating scale for impact/probability: [0; SCALE]
     public static final double SCALE = 3;
 
     private String name;
@@ -85,11 +86,13 @@ public class Device{
     }
 
     public void computeRatings(Map<String, Dimension> dimensionRatings) {
+        // Compute base impact from dimensions (with no dimensions present, use SCALE / 2)
         baseImpact = dimensions.stream()
                 .mapToDouble(s -> dimensionRatings.get(s.toUpperCase()).getBaseImpact())
                 .average()
                 .orElse(SCALE / 2);
 
+        // Compute base probability from dimensions (with no dimensions present, use SCALE / 2)
         baseProbability = dimensions.stream()
                 .mapToDouble(s -> dimensionRatings.get(s.toUpperCase()).getBaseProbability())
                 .average()
