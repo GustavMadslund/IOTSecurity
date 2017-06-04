@@ -154,23 +154,36 @@ public class Analyser {
     }
 
     public static void main(String[] args) throws Exception {
-        Parser parser = new Parser();
-        Map<String, Dimension> dimensions = parser.parseEnvironment("xml/environment1.xml");
-        Map<String, Device> devices = parser.parseSystem("xml/case2.xml", dimensions);
+        if (args.length < 2) {
+            System.out.println("Parameters: ENVIRONMENT_PATH SYSTEM_PATH DEBUG_OUTPUT");
+            return;
+        }
+        boolean debug = args.length > 2 && Boolean.parseBoolean(args[2]);
 
-        for(Map.Entry<String, Device> entry : devices.entrySet()){
-            System.out.println(entry.getValue());
-            System.out.println("CONNECTIONS:");
-            entry.getValue().getConnections().forEach(System.out::println);
-            System.out.println("----------");
+        Parser parser = new Parser();
+        Map<String, Dimension> dimensions = parser.parseEnvironment(args[0]);
+        Map<String, Device> devices = parser.parseSystem(args[1], dimensions);
+        if (devices.isEmpty()) {
+            return;
+        }
+
+        if (debug) {
+            for(Map.Entry<String, Device> entry : devices.entrySet()){
+                System.out.println(entry.getValue());
+                System.out.println("CONNECTIONS:");
+                entry.getValue().getConnections().forEach(System.out::println);
+                System.out.println("----------");
+            }
         }
 
         Analyser analyser = new Analyser(devices);
         analyser.computeRisk();
 
-        System.out.println("Probability:");
-        devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getNewProbability()));
-        System.out.println("Impact:");
-        devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getNewImpact()));
+        if (debug) {
+            System.out.println("Probability:");
+            devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getNewProbability()));
+            System.out.println("Impact:");
+            devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getNewImpact()));
+        }
     }
 }
