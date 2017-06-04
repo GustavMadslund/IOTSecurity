@@ -3,7 +3,6 @@ package Analysis;
 import Graph.Connection;
 import Graph.Device;
 import Parser.Parser;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -155,25 +154,9 @@ public class Analyser {
     }
 
     public static void main(String[] args) throws Exception {
-        Map<String, Dimension> dimensions = new HashMap<>();
-        dimensions.put("MISSION CRITICAL", new Dimension("MISSION CRITICAL", 3.0, 1.5));
-        dimensions.put("PATCHABLE", new Dimension("PATCHABLE", 0.0, 0.0));
-        dimensions.put("UNPATCHABLE", new Dimension("UNPATCHABLE", 2.0, 3.0));
-        dimensions.put("STANDARD BASED", new Dimension("STANDARD BASED", 1.0, 1.0));
-        dimensions.put("MANAGED", new Dimension("STANDARD BASED", 1.0, 1.0));
-
-        //===
-        dimensions.put("0", new Dimension("0", 0.0, 0.0));
-        dimensions.put("1", new Dimension("1", 1.2, 1.2));
-        dimensions.put("2", new Dimension("2", 0.1, 0.1));
-        dimensions.put("3", new Dimension("3", 2.5, 2.5));
-        dimensions.put("4", new Dimension("4", 0.2, 0.2));
-        dimensions.put("5", new Dimension("5", 3.0, 3.0));
-        dimensions.put("6", new Dimension("6", 0.1, 0.1));
-        //===
-
         Parser parser = new Parser();
-        Map<String, Device> devices = parser.parse("xml/case2.xml", dimensions);
+        Map<String, Dimension> dimensions = parser.parseEnvironment("xml/environment1.xml");
+        Map<String, Device> devices = parser.parseSystem("xml/case2.xml", dimensions);
 
         for(Map.Entry<String, Device> entry : devices.entrySet()){
             System.out.println(entry.getValue());

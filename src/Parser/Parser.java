@@ -11,6 +11,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import sun.security.pkcs.ParsingException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,7 +36,63 @@ public class Parser {
         }
     }
 
-    public Map<String, Device> parse(String file, Map<String, Dimension> dimensions) throws IOException, SAXException, ParserException {
+    public Map<String, Dimension> parseEnvironment(String file) throws IOException, SAXException, ParserException {
+        // Load XML
+        Document doc = db.parse(new File(file));
+
+        // Find all dimension tags
+        NodeList dimensions = doc.getElementsByTagName("dimension");
+
+        Map<String, Dimension> dimensionMap = new HashMap<>();
+
+        // Parse dimensions
+        for (int i = 0; i < dimensions.getLength(); i++) {
+            Node dimensionNode = dimensions.item(i);
+            NamedNodeMap dimensionAttributes = dimensionNode.getAttributes();
+
+            String dimensionName;
+            try {
+                dimensionName = dimensionAttributes.getNamedItem("name").getNodeValue();
+            }
+            catch (NullPointerException e) {
+                throw new ParsingException("Missing 'name' attribute for dimension.");
+            }
+
+            double impact;
+            try {
+                impact = Double.parseDouble(dimensionAttributes.getNamedItem("impact").getNodeValue());
+            }
+            catch (NullPointerException e) {
+                throw new ParserException("Missing 'impact' attribute for dimension.");
+            }
+            catch (NumberFormatException e) {
+                throw new ParserException("Invalid 'impact' attribute for dimension.");
+            }
+            if (impact < 0.0 || impact > Dimension.SCALE) {
+                throw new ParsingException("Impact rating out of range for dimension.");
+            }
+
+            double probability;
+            try {
+                probability = Double.parseDouble(dimensionAttributes.getNamedItem("probability").getNodeValue());
+            }
+            catch (NullPointerException e) {
+                throw new ParserException("Missing 'probability' attribute for dimension.");
+            }
+            catch (NumberFormatException e) {
+                throw new ParserException("Invalid 'probability' attribute for dimension.");
+            }
+            if (probability < 0.0 || probability > Dimension.SCALE) {
+                throw new ParsingException("Probability rating out of range for dimension.");
+            }
+
+            dimensionMap.put(dimensionName, new Dimension(dimensionName, impact, probability));
+        }
+
+        return dimensionMap;
+    }
+
+    public Map<String, Device> parseSystem(String file, Map<String, Dimension> dimensions) throws IOException, SAXException, ParserException {
         // Load XML
         Document doc = db.parse(new File(file));
 
@@ -49,7 +106,6 @@ public class Parser {
         // Parse and encode the connections
         parseConnections(connections, deviceMap);
 
-        // Done
         return deviceMap;
     }
 
