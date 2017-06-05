@@ -2,7 +2,6 @@ package Analysis;
 
 import Graph.Connection;
 import Graph.Device;
-import Parser.Parser;
 
 import java.util.*;
 import java.util.stream.Collectors;
