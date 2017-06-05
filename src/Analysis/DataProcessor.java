@@ -31,8 +31,8 @@ public class DataProcessor {
         }
 
         // Analyze
-        Analyser analyser = new Analyser(devices);
-        analyser.computeRisk();
+        Analyzer analyzer = new Analyzer(devices);
+        analyzer.computeRisk();
 
         if (debug) {
             System.out.println("Probability:");

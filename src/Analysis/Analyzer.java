@@ -7,10 +7,10 @@ import Parser.Parser;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Analyser {
+public class Analyzer {
     private Map<String, Device> devices;
 
-    public Analyser(Map<String, Device> devices) {
+    public Analyzer(Map<String, Device> devices) {
         this.devices = devices;
     }
 
