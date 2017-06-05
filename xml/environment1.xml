@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<environment>
+    <dimension name="0" impact="0.0" probability="0.0"/>
+    <dimension name="1" impact="1.2" probability="1.2"/>
+    <dimension name="2" impact="0.1" probability="0.1"/>
+    <dimension name="3" impact="2.5" probability="2.5"/>
+    <dimension name="4" impact="0.2" probability="0.2"/>
+    <dimension name="5" impact="3.0" probability="3.0"/>
+    <dimension name="6" impact="0.1" probability="0.1"/>
+</environment>

@@ -1,6 +1,9 @@
 package Analysis;
 
 public class Dimension {
+    // The rating scale for impact/probability: [0; SCALE]
+    public static final double SCALE = 3;
+
     private String name;
     private double baseImpact;
     private double baseProbability;

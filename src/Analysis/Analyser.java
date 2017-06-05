@@ -4,12 +4,7 @@ import Graph.Connection;
 import Graph.Device;
 import Parser.Parser;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Analyser {
@@ -19,6 +14,7 @@ public class Analyser {
         this.devices = devices;
     }
 
+    // Find new devices connected to the current device
     private List<Device> getExpandedNodes(Device device, Set<Device> frontierSet, Set<Device> exploredNodes) {
         return device.getConnections().stream()
                 .map(c -> c.getFrom() != device ? c.getFrom() : c.getTo())
@@ -27,178 +23,167 @@ public class Analyser {
                 .collect(Collectors.toList());
     }
 
-    private List<Device> getExpandedImpactUpdateNodes(Device device, Set<Device> frontierSet, Set<Device> exploredNodes, Set<Device> exploredExploredNodes) {
+    // Find new devices with a connection towards the current device
+    private List<Device> getExpandedImpactUpdateNodes(Device device, Set<Device> frontierSet, Set<Device> relevantNodes, Set<Device> exploredNodes) {
         return device.getConnections().stream()
                 .filter(c -> c.getTo() == device)
                 .map(Connection::getFrom)
-                .filter(exploredNodes::contains)
-                .filter(d -> !exploredExploredNodes.contains(d))
+                .filter(relevantNodes::contains)
+                .filter(d -> !exploredNodes.contains(d))
                 .filter(d -> !frontierSet.contains(d))
                 .collect(Collectors.toList());
     }
 
-    private List<Device> getExpandedProbabilityUpdateNodes(Device device, Set<Device> frontierSet, Set<Device> exploredNodes, Set<Device> exploredExploredNodes) {
+    // Find new devices with an access connection from the current device
+    private List<Device> getExpandedProbabilityUpdateNodes(Device device, Set<Device> frontierSet, Set<Device> relevantNodes, Set<Device> exploredNodes) {
         return device.getConnections().stream()
                 .filter(c -> c.getFrom() == device)
                 .filter(Connection::getAccess)
                 .map(Connection::getTo)
-                .filter(exploredNodes::contains)
-                .filter(d -> !exploredExploredNodes.contains(d))
+                .filter(relevantNodes::contains)
+                .filter(d -> !exploredNodes.contains(d))
                 .filter(d -> !frontierSet.contains(d))
                 .collect(Collectors.toList());
     }
 
-    private void updateImpact(Device device, Set<Device> exploredNodes) {
-        LinkedList<Device> frontier = new LinkedList<>();
-        Set<Device> frontierSet = new HashSet<>();
-        Set<Device> exploredExploredNodes = new HashSet<>();
-
-        frontier.addAll(getExpandedImpactUpdateNodes(device, frontierSet, exploredNodes, exploredExploredNodes));
-        frontierSet.addAll(frontier);
-        while (!frontier.isEmpty()) {
-            Device currentDevice = frontier.pop();
-            frontierSet.remove(currentDevice);
-
-            double highestImpact = -1.0;
-            Device otherDevice = null;
+    // Updates impact ratings backwards through the graph
+    private void updateImpactRatings(Device device, Set<Device> relevantNodes) {
+        // Find start devices and do BFS from them
+        List<Device> startDevices = getExpandedImpactUpdateNodes(device, Collections.emptySet(), relevantNodes, Collections.emptySet());
+        BFS.search(startDevices, relevantNodes, (currentDevice, frontierSet, frontier, relevantNodesBody, exploredNodes) -> {
+            // Find the neighbouring device with the highest impact
+            Device highestImpactDevice = null;
             for (Connection c : currentDevice.getConnections()) {
                 if (c.getFrom() == currentDevice) {
-                    if (c.getTo().getNewImpact() > highestImpact) {
-                        otherDevice = c.getTo();
-                        highestImpact = otherDevice.getNewImpact();
+                    if (highestImpactDevice == null || c.getTo().getNewImpact() > highestImpactDevice.getNewImpact()) {
+                        highestImpactDevice = c.getTo();
                     }
                 }
             }
-            if (highestImpact > (2 * currentDevice.getNewImpact() - currentDevice.getBaseImpact())) {
-                currentDevice.setNewImpact((currentDevice.getBaseImpact() + otherDevice.getNewImpact()) / 2);
 
-                exploredExploredNodes.add(currentDevice);
-                List<Device> expandedNodes = getExpandedImpactUpdateNodes(currentDevice, frontierSet, exploredNodes, exploredExploredNodes);
-                frontier.addAll(expandedNodes);
-                frontierSet.addAll(expandedNodes);
+            exploredNodes.add(currentDevice);
+
+            //Check if the impact rating should be updated
+            if (highestImpactDevice != null) {
+                double newImpact = (currentDevice.getBaseImpact() + highestImpactDevice.getNewImpact()) / 2;
+                if (newImpact > currentDevice.getNewImpact()) {
+                    currentDevice.setNewImpact(newImpact);
+
+                    List<Device> expandedNodes = getExpandedImpactUpdateNodes(currentDevice, frontierSet, relevantNodesBody, exploredNodes);
+                    frontier.addAll(expandedNodes);
+                    frontierSet.addAll(expandedNodes);
+                }
             }
-            else {
-                exploredExploredNodes.add(currentDevice);
-            }
-        }
+        });
     }
 
-    private void updateProbability(Device device, Set<Device> exploredNodes) {
-        LinkedList<Device> frontier = new LinkedList<>();
-        Set<Device> frontierSet = new HashSet<>();
-        Set<Device> exploredExploredNodes = new HashSet<>();
-
-        frontier.addAll(getExpandedProbabilityUpdateNodes(device, frontierSet, exploredNodes, exploredExploredNodes));
-        frontierSet.addAll(frontier);
-        while (!frontier.isEmpty()) {
-            Device currentDevice = frontier.pop();
-            frontierSet.remove(currentDevice);
-
-            double highestProbability = -1.0;
-            Device otherDevice = null;
+    // Updates probability ratings backwards through the graph
+    private void updateProbabilityRatings(Device device, Set<Device> relevantNodes) {
+        // Find start devices and do BFS from them
+        List<Device> startDevices = getExpandedProbabilityUpdateNodes(device, Collections.emptySet(), relevantNodes, Collections.emptySet());
+        BFS.search(startDevices, relevantNodes, (currentDevice, frontierSet, frontier, relevantNodesBody, exploredNodes) -> {
+            // Find the neighbouring device with the highest probability
+            Device highestProbabilityDevice = null;
             for (Connection c : currentDevice.getConnections()) {
                 if (c.getTo() == currentDevice && c.getAccess()) {
-                    if (c.getFrom().getNewProbability() > highestProbability) {
-                        otherDevice = c.getFrom();
-                        highestProbability = otherDevice.getNewProbability();
+                    if (highestProbabilityDevice == null || c.getFrom().getNewProbability() > highestProbabilityDevice.getNewProbability()) {
+                        highestProbabilityDevice = c.getFrom();
                     }
                 }
             }
-            if (highestProbability > (2 * currentDevice.getNewProbability() - currentDevice.getBaseProbability())) {
-                currentDevice.setNewProbability((currentDevice.getBaseProbability() + otherDevice.getNewProbability()) / 2);
 
-                exploredExploredNodes.add(currentDevice);
-                List<Device> expandedNodes = getExpandedProbabilityUpdateNodes(currentDevice, frontierSet, exploredNodes, exploredExploredNodes);
-                frontier.addAll(expandedNodes);
-                frontierSet.addAll(expandedNodes);
+            exploredNodes.add(currentDevice);
+
+            //Check if the probability rating should be updated
+            if (highestProbabilityDevice != null) {
+                double newProbability = (currentDevice.getBaseProbability() + highestProbabilityDevice.getNewProbability()) / 2;
+                if (newProbability > currentDevice.getNewProbability()) {
+                    currentDevice.setNewProbability(newProbability);
+
+                    List<Device> expandedNodes = getExpandedProbabilityUpdateNodes(currentDevice, frontierSet, relevantNodesBody, exploredNodes);
+                    frontier.addAll(expandedNodes);
+                    frontierSet.addAll(expandedNodes);
+                }
             }
-            else {
-                exploredExploredNodes.add(currentDevice);
-            }
-        }
+        });
     }
 
+    // Computes the impact and probability ratings for every node using BFS
     public void computeRisk() {
-        LinkedList<Device> frontier = new LinkedList<>();
-        Set<Device> frontierSet = new HashSet<>();
-        Set<Device> exploredNodes = new HashSet<>();
-
+        // Pick a start device and do BFS from there
         Device startDevice = devices.entrySet().iterator().next().getValue();
-        frontier.add(startDevice);
-        frontierSet.add(startDevice);
-        while (!frontier.isEmpty()) {
-            Device currentDevice = frontier.pop();
-            frontierSet.remove(currentDevice);
-
-            double highestProbability = -1.0;
-            double highestImpact = -1.0;
-            Device otherProbabilityDevice = null;
-            Device otherImpactDevice = null;
+        BFS.search(Collections.singletonList(startDevice), null, (currentDevice, frontierSet, frontier, relevantNodes, exploredNodes) -> {
+            // Find the neighbouring device with the highest impact and probability
+            Device highestImpactDevice = null;
+            Device highestProbabilityDevice = null;
             for (Connection c : currentDevice.getConnections()) {
-                if (c.getTo() == currentDevice && c.getAccess()) {
-                    if (c.getFrom().getNewProbability() > highestProbability) {
-                        otherProbabilityDevice = c.getFrom();
-                        highestProbability = otherProbabilityDevice.getNewProbability();
+                if (c.getFrom() == currentDevice) {
+                    if (highestImpactDevice == null || c.getTo().getNewImpact() > highestImpactDevice.getNewImpact()) {
+                        highestImpactDevice = c.getTo();
                     }
                 }
-                else if (c.getFrom() == currentDevice) {
-                    if (c.getTo().getNewImpact() > highestImpact) {
-                        otherImpactDevice = c.getTo();
-                        highestImpact = otherImpactDevice.getNewImpact();
+                else if (c.getTo() == currentDevice && c.getAccess()) {
+                    if (highestProbabilityDevice == null || c.getFrom().getNewProbability() > highestProbabilityDevice.getNewProbability()) {
+                        highestProbabilityDevice = c.getFrom();
                     }
                 }
             }
 
-            if (highestProbability > (2 * currentDevice.getNewProbability() - currentDevice.getBaseProbability())) {
-                currentDevice.setNewProbability((currentDevice.getBaseProbability() + otherProbabilityDevice.getNewProbability()) / 2);
-                updateProbability(currentDevice, exploredNodes);
+            // Check if the impact rating should be updated
+            if (highestImpactDevice != null) {
+                double newImpact = (currentDevice.getBaseImpact() + highestImpactDevice.getNewImpact()) / 2;
+                if (newImpact > currentDevice.getNewImpact()) {
+                    currentDevice.setNewImpact(newImpact);
+                    updateImpactRatings(currentDevice, exploredNodes);
+                }
             }
-            if (highestImpact > (2 * currentDevice.getNewImpact() - currentDevice.getBaseImpact())) {
-                currentDevice.setNewImpact((currentDevice.getBaseImpact() + otherImpactDevice.getNewImpact()) / 2);
-                updateImpact(currentDevice, exploredNodes);
+            //Check if the probability rating should be updated
+            if (highestProbabilityDevice != null) {
+                double newProbability = (currentDevice.getBaseProbability() + highestProbabilityDevice.getNewProbability()) / 2;
+                if (newProbability > currentDevice.getNewProbability()) {
+                    currentDevice.setNewProbability(newProbability);
+                    updateProbabilityRatings(currentDevice, exploredNodes);
+                }
             }
 
             exploredNodes.add(currentDevice);
             List<Device> expandedNodes = getExpandedNodes(currentDevice, frontierSet, exploredNodes);
             frontier.addAll(expandedNodes);
             frontierSet.addAll(expandedNodes);
-        }
+        });
     }
 
     public static void main(String[] args) throws Exception {
-        Map<String, Dimension> dimensions = new HashMap<>();
-        dimensions.put("MISSION CRITICAL", new Dimension("MISSION CRITICAL", 3.0, 1.5));
-        dimensions.put("PATCHABLE", new Dimension("PATCHABLE", 0.0, 0.0));
-        dimensions.put("UNPATCHABLE", new Dimension("UNPATCHABLE", 2.0, 3.0));
-        dimensions.put("STANDARD BASED", new Dimension("STANDARD BASED", 1.0, 1.0));
-        dimensions.put("MANAGED", new Dimension("STANDARD BASED", 1.0, 1.0));
-
-        //===
-        dimensions.put("0", new Dimension("0", 0.0, 0.0));
-        dimensions.put("1", new Dimension("1", 1.2, 1.2));
-        dimensions.put("2", new Dimension("2", 0.1, 0.1));
-        dimensions.put("3", new Dimension("3", 2.5, 2.5));
-        dimensions.put("4", new Dimension("4", 0.2, 0.2));
-        dimensions.put("5", new Dimension("5", 3.0, 3.0));
-        dimensions.put("6", new Dimension("6", 0.1, 0.1));
-        //===
+        if (args.length < 2) {
+            System.out.println("Parameters: ENVIRONMENT_PATH SYSTEM_PATH DEBUG_OUTPUT");
+            return;
+        }
+        boolean debug = args.length > 2 && Boolean.parseBoolean(args[2]);
 
         Parser parser = new Parser();
-        Map<String, Device> devices = parser.parse("xml/case2.xml", dimensions);
+        Map<String, Dimension> dimensions = parser.parseEnvironment(args[0]);
+        Map<String, Device> devices = parser.parseSystem(args[1], dimensions);
+        if (devices.isEmpty()) {
+            return;
+        }
 
-        for(Map.Entry<String, Device> entry : devices.entrySet()){
-            System.out.println(entry.getValue());
-            System.out.println("CONNECTIONS:");
-            entry.getValue().getConnections().forEach(System.out::println);
-            System.out.println("----------");
+        if (debug) {
+            for(Map.Entry<String, Device> entry : devices.entrySet()){
+                System.out.println(entry.getValue());
+                System.out.println("CONNECTIONS:");
+                entry.getValue().getConnections().forEach(System.out::println);
+                System.out.println("----------");
+            }
         }
 
         Analyser analyser = new Analyser(devices);
         analyser.computeRisk();
 
-        System.out.println("Probability:");
-        devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getNewProbability()));
-        System.out.println("Impact:");
-        devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getNewImpact()));
+        if (debug) {
+            System.out.println("Probability:");
+            devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getNewProbability()));
+            System.out.println("Impact:");
+            devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getNewImpact()));
+        }
     }
 }
