@@ -4,8 +4,11 @@ import Analysis.Dimension;
 import Enum.DeviceType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Device{
     private String name;
@@ -21,6 +24,11 @@ public class Device{
     private double newImpact;
     private double newProbability;
 
+    private Device impactModifiedBy;
+    private Device probabilityModifiedBy;
+    private Set<Device> impactModified;
+    private Set<Device> probabilityModified;
+
     public Device(String name, DeviceType deviceType, List<String> sensors, List<String> actuators, List<String> dimensions) {
         this.name = name;
         this.deviceType = deviceType;
@@ -28,6 +36,11 @@ public class Device{
         this.actuators = actuators;
         this.dimensions = dimensions;
         connections = new ArrayList<>();
+
+        impactModifiedBy = null;
+        probabilityModifiedBy = null;
+        impactModified = new HashSet<>();
+        probabilityModified = new HashSet<>();
     }
 
     public String getName() {
@@ -80,6 +93,44 @@ public class Device{
 
     public void addConnection(Connection connection) {
         connections.add(connection);
+    }
+
+    public Device getImpactModifiedBy() {
+        return impactModifiedBy;
+    }
+
+    public void setImpactModifiedBy(Device impactModifiedBy) {
+        this.impactModifiedBy = impactModifiedBy;
+    }
+
+    public Device getProbabilityModifiedBy() {
+        return probabilityModifiedBy;
+    }
+
+    public void setProbabilityModifiedBy(Device probabilityModifiedBy) {
+        this.probabilityModifiedBy = probabilityModifiedBy;
+    }
+
+    public Set<Device> getImpactModified() {
+        return impactModified;
+    }
+
+    public String getImpactModifiedString() {
+        String result =  impactModified.stream()
+                .map(Device::getName)
+                .collect(Collectors.joining(", "));
+        return result.isEmpty() ? "-" : result;
+    }
+
+    public Set<Device> getProbabilityModified() {
+        return probabilityModified;
+    }
+
+    public String getProbabilityModifiedString() {
+        String result =  probabilityModified.stream()
+                .map(Device::getName)
+                .collect(Collectors.joining(", "));
+        return result.isEmpty() ? "-" : result;
     }
 
     public void computeRatings(Map<String, Dimension> dimensionRatings) {

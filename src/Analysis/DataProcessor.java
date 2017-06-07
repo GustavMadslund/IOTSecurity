@@ -74,6 +74,11 @@ public class DataProcessor {
         System.out.println("Probability increase per device:");
         devices.forEach((key, value) -> System.out.println(value.getName() + ": " + decimalFormat.format((value.getNewProbability() - value.getBaseProbability()))));
 
+        System.out.println("Impact modified per device:");
+        devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getImpactModifiedString()));
+        System.out.println("Probability modified per device:");
+        devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getProbabilityModifiedString()));
+
         double baseImpact = processor.getAverageBaseImpact();
         double baseProbability = processor.getAverageBaseProbability();
         double newImpact = processor.getAverageNewImpact();
