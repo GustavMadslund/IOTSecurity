@@ -49,7 +49,6 @@ public class DataProcessor {
             System.out.println("Parameters: ENVIRONMENT_PATH SYSTEM_PATH DEBUG_OUTPUT");
             return;
         }
-        boolean debug = args.length > 2 && Boolean.parseBoolean(args[2]);
 
         // Parse
         Parser parser = new Parser();
@@ -59,25 +58,9 @@ public class DataProcessor {
             return;
         }
 
-        if (debug) {
-            for(Map.Entry<String, Device> entry : devices.entrySet()){
-                System.out.println(entry.getValue());
-                System.out.println("CONNECTIONS:");
-                entry.getValue().getConnections().forEach(System.out::println);
-                System.out.println("----------");
-            }
-        }
-
         // Analyze
         Analyzer analyzer = new Analyzer(devices);
         analyzer.computeRisk();
-
-        if (debug) {
-            System.out.println("Probability:");
-            devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getNewProbability()));
-            System.out.println("Impact:");
-            devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getNewImpact()));
-        }
 
         // Process data
         DataProcessor processor = new DataProcessor(devices);
@@ -85,6 +68,11 @@ public class DataProcessor {
         DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(Locale.US);
         decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
         decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+
+        System.out.println("Impact increase per device:");
+        devices.forEach((key, value) -> System.out.println(value.getName() + ": " + decimalFormat.format((value.getNewImpact() - value.getBaseImpact()))));
+        System.out.println("Probability increase per device:");
+        devices.forEach((key, value) -> System.out.println(value.getName() + ": " + decimalFormat.format((value.getNewProbability() - value.getBaseProbability()))));
 
         double baseImpact = processor.getAverageBaseImpact();
         double baseProbability = processor.getAverageBaseProbability();
