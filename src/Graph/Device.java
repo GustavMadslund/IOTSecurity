@@ -150,6 +150,26 @@ public class Device{
         newProbability = baseProbability;
     }
 
+    public String getExportString() {
+        return name +
+                "," +
+                baseImpact +
+                "," +
+                baseProbability +
+                "," +
+                newImpact +
+                "," +
+                newProbability +
+                "," +
+                (newImpact - baseImpact) +
+                "," +
+                (newProbability - baseProbability) +
+                "," +
+                (newImpact - baseImpact) / baseImpact +
+                "," +
+                (newProbability - baseProbability) / baseProbability;
+    }
+
     @Override
     public String toString() {
         return "Name: " + name
