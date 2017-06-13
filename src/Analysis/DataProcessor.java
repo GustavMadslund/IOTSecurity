@@ -3,11 +3,16 @@ package Analysis;
 import Graph.Device;
 import Parser.Parser;
 
+import java.io.IOException;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DataProcessor {
     private Map<String, Device> devices;
@@ -44,12 +49,16 @@ public class DataProcessor {
                 .getAsDouble();
     }
 
+    public void exportToFile(String file, String content) throws IOException {
+        Files.write(Paths.get(file), content.getBytes());
+    }
+
     public static void main(String[] args) throws Exception {
         if (args.length < 2) {
             System.out.println("Parameters: ENVIRONMENT_PATH SYSTEM_PATH DEBUG_OUTPUT");
             return;
         }
-        boolean debug = args.length > 2 && Boolean.parseBoolean(args[2]);
+        String exportFile = args.length > 2 ? args[2] : null;
 
         // Parse
         Parser parser = new Parser();
@@ -59,25 +68,9 @@ public class DataProcessor {
             return;
         }
 
-        if (debug) {
-            for(Map.Entry<String, Device> entry : devices.entrySet()){
-                System.out.println(entry.getValue());
-                System.out.println("CONNECTIONS:");
-                entry.getValue().getConnections().forEach(System.out::println);
-                System.out.println("----------");
-            }
-        }
-
         // Analyze
         Analyzer analyzer = new Analyzer(devices);
         analyzer.computeRisk();
-
-        if (debug) {
-            System.out.println("Probability:");
-            devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getNewProbability()));
-            System.out.println("Impact:");
-            devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getNewImpact()));
-        }
 
         // Process data
         DataProcessor processor = new DataProcessor(devices);
@@ -85,6 +78,16 @@ public class DataProcessor {
         DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(Locale.US);
         decimalFormat.setDecimalFormatSymbols(decimalFormatSymbols);
         decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+
+        System.out.println("Impact increase per device:");
+        devices.forEach((key, value) -> System.out.println(value.getName() + ": " + decimalFormat.format((value.getNewImpact() - value.getBaseImpact()))));
+        System.out.println("Probability increase per device:");
+        devices.forEach((key, value) -> System.out.println(value.getName() + ": " + decimalFormat.format((value.getNewProbability() - value.getBaseProbability()))));
+
+        System.out.println("Impact modified per device:");
+        devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getImpactModifiedString()));
+        System.out.println("Probability modified per device:");
+        devices.forEach((key, value) -> System.out.println(value.getName() + ": " + value.getProbabilityModifiedString()));
 
         double baseImpact = processor.getAverageBaseImpact();
         double baseProbability = processor.getAverageBaseProbability();
@@ -104,5 +107,14 @@ public class DataProcessor {
         double probabilityRelativeIncrease = probabilityIncrease / baseProbability;
         System.out.println("Relative increase in impact rating: " + ((int) (impactRelativeIncrease * 100)) + "%");
         System.out.println("Relative increase in probability rating: " + ((int) (probabilityRelativeIncrease * 100)) + "%");
+
+        if (exportFile != null) {
+            String output = "device,impact_base,probability_base,impact_new,probability_new,impact_increase,probability_increase,impact_relative_increase,probability_relative_increase\n" +
+                    devices.entrySet().stream()
+                            .map(Map.Entry::getValue)
+                            .map(Device::getExportString)
+                            .collect(Collectors.joining("\n", "", "\n"));
+            processor.exportToFile(exportFile, output);
+        }
     }
 }

@@ -68,6 +68,12 @@ public class Analyzer {
                 if (newImpact > currentDevice.getNewImpact()) {
                     currentDevice.setNewImpact(newImpact);
 
+                    if (currentDevice.getImpactModifiedBy() != null) {
+                        currentDevice.getImpactModifiedBy().getImpactModified().remove(currentDevice);
+                    }
+                    highestImpactDevice.getImpactModified().add(currentDevice);
+                    currentDevice.setImpactModifiedBy(highestImpactDevice);
+
                     List<Device> expandedNodes = getExpandedImpactUpdateNodes(currentDevice, frontierSet, relevantNodesBody, exploredNodes);
                     frontier.addAll(expandedNodes);
                     frontierSet.addAll(expandedNodes);
@@ -98,6 +104,12 @@ public class Analyzer {
                 double newProbability = (currentDevice.getBaseProbability() + highestProbabilityDevice.getNewProbability()) / 2;
                 if (newProbability > currentDevice.getNewProbability()) {
                     currentDevice.setNewProbability(newProbability);
+
+                    if (currentDevice.getProbabilityModifiedBy() != null) {
+                        currentDevice.getProbabilityModifiedBy().getProbabilityModified().remove(currentDevice);
+                    }
+                    highestProbabilityDevice.getProbabilityModified().add(currentDevice);
+                    currentDevice.setProbabilityModifiedBy(highestProbabilityDevice);
 
                     List<Device> expandedNodes = getExpandedProbabilityUpdateNodes(currentDevice, frontierSet, relevantNodesBody, exploredNodes);
                     frontier.addAll(expandedNodes);
@@ -133,6 +145,13 @@ public class Analyzer {
                 double newImpact = (currentDevice.getBaseImpact() + highestImpactDevice.getNewImpact()) / 2;
                 if (newImpact > currentDevice.getNewImpact()) {
                     currentDevice.setNewImpact(newImpact);
+
+                    if (currentDevice.getImpactModifiedBy() != null) {
+                        currentDevice.getImpactModifiedBy().getImpactModified().remove(currentDevice);
+                    }
+                    highestImpactDevice.getImpactModified().add(currentDevice);
+                    currentDevice.setImpactModifiedBy(highestImpactDevice);
+
                     updateImpactRatings(currentDevice, exploredNodes);
                 }
             }
@@ -141,6 +160,13 @@ public class Analyzer {
                 double newProbability = (currentDevice.getBaseProbability() + highestProbabilityDevice.getNewProbability()) / 2;
                 if (newProbability > currentDevice.getNewProbability()) {
                     currentDevice.setNewProbability(newProbability);
+
+                    if (currentDevice.getProbabilityModifiedBy() != null) {
+                        currentDevice.getProbabilityModifiedBy().getProbabilityModified().remove(currentDevice);
+                    }
+                    highestProbabilityDevice.getProbabilityModified().add(currentDevice);
+                    currentDevice.setProbabilityModifiedBy(highestProbabilityDevice);
+
                     updateProbabilityRatings(currentDevice, exploredNodes);
                 }
             }

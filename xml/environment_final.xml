@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<environment>
+    <dimension name="Mission Critical" impact="3" probability="1"/>
+    <dimension name="Standards-Based" impact="0" probability="0"/>
+    <dimension name="Orphaned" impact="2" probability="3"/>
+    <dimension name="Patchable" impact="0" probability="0"/>
+    <dimension name="Sensor" impact="1" probability="0"/>
+    <dimension name="Connectivity Dependence" impact="1" probability="1"/>
+    <dimension name="Locked-In" impact="1" probability="0"/>
+    <dimension name="Low Resources" impact="0" probability="1"/>
+    <dimension name="Fixed" impact="0" probability="0"/>
+    <dimension name="Destructible" impact="0" probability="0"/>
+    <dimension name="Public Sector" impact="2" probability="0"/>
+    <dimension name="Military" impact="2" probability="0"/>
+    <dimension name="Consumer" impact="1" probability="1"/>
+    <dimension name="Non-Mission Critical" impact="1" probability="1"/>
+    <dimension name="Proprietary" impact="0" probability="1"/>
+    <dimension name="Managed" impact="1" probability="0"/>
+    <dimension name="Unpatchable" impact="1" probability="3"/>
+    <dimension name="Actuator" impact="2" probability="1"/>
+    <dimension name="Connectivity Independence" impact="1" probability="0"/>
+    <dimension name="Not Locked-In" impact="0" probability="1"/>
+    <dimension name="High Resources" impact="1" probability="0"/>
+    <dimension name="Mobile" impact="0" probability="0"/>
+    <dimension name="Indestructible" impact="2" probability="0"/>
+    <dimension name="Private Sector" impact="2" probability="0"/>
+    <dimension name="Civil" impact="1" probability="1"/>
+    <dimension name="Industrial" impact="2" probability="0"/>
+</environment>

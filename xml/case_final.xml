@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<system>
+    <device name="Bulb0" type="bulb">
+        <dimension>Proprietary</dimension>
+        <dimension>Fixed</dimension>
+        <dimension>Destructible</dimension>
+        <dimension>Low Resources</dimension>
+        <dimension>Actuator</dimension>
+    </device>
+    <device name="SmokeAlarm0" type="smoke_alarm">
+        <dimension>Mission Critical</dimension>
+        <dimension>Proprietary</dimension>
+        <dimension>Managed</dimension>
+        <dimension>Fixed</dimension>
+        <dimension>Low Resources</dimension>
+        <dimension>Sensor</dimension>
+        <dimension>Actuator</dimension>
+    </device>
+    <device name="TV0" type="tv">
+        <dimension>Standards-Based</dimension>
+        <dimension>Managed</dimension>
+        <dimension>Patchable</dimension>
+        <dimension>Destructible</dimension>
+    </device>
+    <device name="CoffeeMachine0" type="coffee_machine">
+        <dimension>Standards-Based</dimension>
+        <dimension>Orphaned</dimension>
+        <dimension>Unpatchable</dimension>
+        <dimension>Low Resources</dimension>
+        <dimension>Actuator</dimension>
+    </device>
+    <device name="Fridge0" type="fridge">
+        <dimension>Standards-Based</dimension>
+        <dimension>Orphaned</dimension>
+        <dimension>Unpatchable</dimension>
+        <dimension>Fixed</dimension>
+        <dimension>Low Resources</dimension>
+    </device>
+    <device name="Hub0" type="hub">
+        <dimension>Proprietary</dimension>
+        <dimension>Mission Critical</dimension>
+        <dimension>Managed</dimension>
+        <dimension>Patchable</dimension>
+        <dimension>Fixed</dimension>
+        <dimension>Destructible</dimension>
+        <dimension>Sensor</dimension>
+        <dimension>Actuator</dimension>
+    </device>
+    <device name="Phone0" type="phone">
+        <dimension>Proprietary</dimension>
+        <dimension>Managed</dimension>
+        <dimension>Patchable</dimension>
+        <dimension>Mobile</dimension>
+        <dimension>Destructible</dimension>
+        <dimension>Actuator</dimension>
+    </device>
+    <device name="Plug0" type="plug">
+        <dimension>Non-Mission Critical</dimension>
+        <dimension>Proprietary</dimension>
+        <dimension>Managed</dimension>
+        <dimension>Fixed</dimension>
+    </device>
+    <device name="Thermostat0" type="thermostat">
+        <dimension>Proprietary</dimension>
+        <dimension>Managed</dimension>
+        <dimension>Patchable</dimension>
+        <dimension>Fixed</dimension>
+        <dimension>Low Resources</dimension>
+        <dimension>Destructible</dimension>
+        <dimension>Actuator</dimension>
+        <dimension>Sensor</dimension>
+    </device>
+    <device name="Window0" type="window">
+        <dimension>Proprietary</dimension>
+        <dimension>Managed</dimension>
+        <dimension>Patchable</dimension>
+        <dimension>Fixed</dimension>
+        <dimension>Destructible</dimension>
+        <dimension>Actuator</dimension>
+    </device>
+    <device name="Alarm0" type="alarm">
+        <dimension>Mission Critical</dimension>
+        <dimension>Proprietary</dimension>
+        <dimension>Managed</dimension>
+        <dimension>Fixed</dimension>
+        <dimension>Low Resources</dimension>
+        <dimension>Sensor</dimension>
+        <dimension>Actuator</dimension>
+    </device>
+    <device name="Lock0" type="lock">
+        <dimension>Standards-Based</dimension>
+        <dimension>Orphaned</dimension>
+        <dimension>Patchable</dimension>
+        <dimension>Fixed</dimension>
+        <dimension>Destructible</dimension>
+        <dimension>Actuator</dimension>
+    </device>
+    <device name="CCTV0" type="cctv">
+        <dimension>Mission Critical</dimension>
+        <dimension>Proprietary</dimension>
+        <dimension>Managed</dimension>
+        <dimension>Patchable</dimension>
+        <dimension>Mobile</dimension>
+        <dimension>Low Resources</dimension>
+        <dimension>Sensor</dimension>
+    </device>
+    <connection format="D2D" type="ZigBee" access="false">
+        <from>Hub0</from>
+        <to>Bulb0</to>
+    </connection>
+    <connection format="D2G" type="WiFi" access="true">
+        <from>Phone0</from>
+        <to>SmokeAlarm0</to>
+    </connection>
+    <connection format="D2G" type="WiFi" access="true">
+        <from>Phone0</from>
+        <to>TV0</to>
+    </connection>
+    <connection format="D2G" type="WiFi" access="false">
+        <from>Phone0</from>
+        <to>CoffeeMachine0</to>
+    </connection>
+    <connection format="D2G" type="WiFi" access="true">
+        <from>Phone0</from>
+        <to>Fridge0</to>
+    </connection>
+    <connection format="D2D" type="Bluetooth" access="true">
+        <from>Phone0</from>
+        <to>Hub0</to>
+    </connection>
+    <connection format="D2G" type="WiFi" access="true">
+        <from>Hub0</from>
+        <to>Alarm0</to>
+    </connection>
+    <connection format="D2G" type="WiFi" access="false">
+        <from>Hub0</from>
+        <to>Plug0</to>
+    </connection>
+    <connection format="D2G" type="WiFi" access="true">
+        <from>Hub0</from>
+        <to>Thermostat0</to>
+    </connection>
+    <connection format="D2D" type="ZigBee" access="false">
+        <from>Thermostat0</from>
+        <to>Window0</to>
+    </connection>
+    <connection format="D2D" type="ZigBee" access="false">
+        <from>Hub0</from>
+        <to>Window0</to>
+    </connection>
+    <connection format="D2D" type="Bluetooth" access="false">
+        <from>Phone0</from>
+        <to>Window0</to>
+    </connection>
+    <connection format="D2G" type="WiFi" access="false">
+        <from>Alarm0</from>
+        <to>Lock0</to>
+    </connection>
+    <connection format="D2G" type="WiFi" access="true">
+        <from>Phone0</from>
+        <to>Lock0</to>
+    </connection>
+    <connection format="D2G" type="WiFi" access="true">
+        <from>Phone0</from>
+        <to>CCTV0</to>
+    </connection>
+    <connection format="D2G" type="WiFi" access="true">
+        <from>Phone0</from>
+        <to>Alarm0</to>
+    </connection>
+</system>

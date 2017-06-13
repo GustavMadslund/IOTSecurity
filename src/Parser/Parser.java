@@ -86,7 +86,7 @@ public class Parser {
                 throw new ParsingException("Probability rating out of range for dimension.");
             }
 
-            dimensionMap.put(dimensionName, new Dimension(dimensionName, impact, probability));
+            dimensionMap.put(dimensionName.toUpperCase(), new Dimension(dimensionName, impact, probability));
         }
 
         return dimensionMap;
